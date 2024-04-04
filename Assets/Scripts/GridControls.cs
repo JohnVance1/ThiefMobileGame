@@ -11,6 +11,8 @@ public class GridControls : MonoBehaviour
     //public List<List<GameObject>> grid;
     public GameObject[,] grid;
 
+
+
     public void GenerateGrid()
     {
         grid = new GameObject[width, height];

@@ -6,24 +6,43 @@ using UnityEngine.InputSystem;
 using UnityEngine.Windows;
 using UnityEngine.InputSystem.EnhancedTouch;
 using UnityEngine.InputSystem.Users;
+using System.IO;
+using Unity.VisualScripting;
+using System;
+
 public class Player_Movement : Character_Base
 {
     
     public PlayerControls input;
     private InputAction move;
+    private GameObject nextPos;
 
-    private bool Moved;
+    private float distanceTime;
+    private float dist;
+    private float rotDist;
+    private float fraction;
+    private Vector3 agentPos;
+
+    public event Action OnPlayerMoved;
+
+    public bool Moved { get; private set; }
+    public bool IsMoving { get; set; }
+    public bool CanMove { get; set; }
+
 
     private void Start()
     {
         currentObj = grid.SetCurrentNode(2, 2);
         currentNode = currentObj.GetComponent<GridNode>();
+        speed = 5;
     }
 
     private void Awake()
     {
         input = new PlayerControls();
         Moved = false;
+        CanMove = true;
+        IsMoving = false;
     }   
 
     private void OnEnable()
@@ -38,41 +57,65 @@ public class Player_Movement : Character_Base
 
     }
 
+   
+
     private void FixedUpdate()
     {
         Vector2 movement = move.ReadValue<Vector2>();
         //horizontal = Input.GetAxisRaw("Horizontal");
 
         //vertical = Input.GetAxisRaw("Vertical");
-
-        if(movement != Vector2.zero && Moved == false)
-        {
-            GameObject nextPos = grid.GetNextNode(movement, currentNode);
-
-            if (nextPos != null)
-            {
-                transform.position = nextPos.transform.position;
-                currentObj = nextPos.gameObject;
-                currentNode.ClearCharacter();
-                currentNode = nextPos.GetComponent<GridNode>();
-                currentNode.ClearCharacter();
-                Moved = true;
-            }
-        }
-        else if(movement == Vector2.zero)
+        if(CanMove)
         {
             Moved = false;
+            if (movement != Vector2.zero)
+            {
+                nextPos = grid.GetNextNode(movement, currentNode);
+
+                if (nextPos != null)
+                {
+                    CanMove = false;
+                    currentObj = nextPos.gameObject;
+                    agentPos = transform.position;
+                    dist = Vector3.Distance(agentPos, currentObj.transform.position);
+                    fraction = 0;
+                    currentNode.ClearCharacter();
+                    IsMoving = true;
+                }
+            }
+            
+        }
+        if (IsMoving == true)
+        {
+            MovePlayer();
 
         }
 
 
+    }
+
+    public void MovePlayer()
+    {
+        if (Vector3.Distance(transform.position, currentObj.transform.position) > 0.1)
+        {
+            float currentDist = speed * Time.deltaTime;
+
+            fraction += (currentDist * dist) / dist;
+            Mathf.Clamp(fraction, 0, 1);
+            transform.position = Vector3.Lerp(agentPos, currentObj.transform.position, fraction);
 
 
-
-
-
-
-        //rb.velocity = movement.normalized * newSpeed;
+        }
+        else
+        {
+            transform.position = currentObj.transform.position;
+            currentNode = currentObj.GetComponent<GridNode>();
+            currentNode.SetCurrentCharacter(gameObject);
+            Moved = true;
+            IsMoving = false;
+            OnPlayerMoved();
+            //CanMove = true;
+        }
 
 
 
