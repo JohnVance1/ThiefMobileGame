@@ -26,15 +26,20 @@ public class FlashLight : MonoBehaviour
 
     private void Start()
     {
+        
+    }
+
+    public void InitLight()
+    {
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
         origin = Vector3.zero;
-        StartCoroutine(StartLight());
+        UpdateLight();
     }
 
     private IEnumerator StartLight()
     {
-        yield return new WaitForEndOfFrame();
+        yield return new WaitForSeconds(0.5f);
         UpdateLight();
     }
 

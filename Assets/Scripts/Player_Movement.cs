@@ -28,12 +28,13 @@ public class Player_Movement : Character_Base
     public bool Moved { get; private set; }
     public bool IsMoving { get; set; }
     public bool CanMove { get; set; }
+    public bool HasTreasure { get; set; }
 
 
     private void Start()
     {
-        currentObj = grid.SetCurrentNode(2, 2);
-        currentNode = currentObj.GetComponent<GridNode>();
+        //currentObj = grid.SetCurrentNode(2, 2);
+        //currentNode = currentObj.GetComponent<GridNode>();
         speed = 5;
     }
 
@@ -70,11 +71,11 @@ public class Player_Movement : Character_Base
             Moved = false;
             if (movement != Vector2.zero)
             {
+                CanMove = false;
                 nextPos = grid.GetNextNode(movement, currentNode);
 
                 if (nextPos != null)
                 {
-                    CanMove = false;
                     currentObj = nextPos.gameObject;
                     agentPos = transform.position;
                     dist = Vector3.Distance(agentPos, currentObj.transform.position);

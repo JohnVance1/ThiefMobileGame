@@ -30,6 +30,8 @@ public class Guard_Basic : Character_Base
     private float rotDist;
     private float fraction;
 
+    public event Action OnDoneMoving;
+
     private void Awake()
     {
         
@@ -37,15 +39,24 @@ public class Guard_Basic : Character_Base
 
     private void Start()
     {
+        //currentObj = grid.SetCurrentNode((int)StartNodePosition.x, (int)StartNodePosition.y);
+        //transform.position = currentObj.transform.position;
+        //currentNode = currentObj.GetComponent<GridNode>();
+        //currentNode.currentCharacter = this.gameObject;
+        
+        
+    }
+
+    override public void Init(int x = 0, int y = 0)
+    {         
+        base.Init((int)StartNodePosition.x, (int)StartNodePosition.y);
+
         aimDir = Vector3.up;
-        currentObj = grid.SetCurrentNode((int)StartNodePosition.x, (int)StartNodePosition.y);
-        transform.position = currentObj.transform.position;
-        currentNode = currentObj.GetComponent<GridNode>();
+        flashLight.InitLight();
         flashLight.SetAimDirection(aimDir);
         flashLight.SetOrigin(transform.position);
         Pathfinding();
         speed = 2;
-        
     }
     
     public void MoveAgent()
@@ -121,6 +132,7 @@ public class Guard_Basic : Character_Base
             path.RemoveAt(0);
             NewPosFound = false;
             CanMove = false;
+            OnDoneMoving();
         }
     }
 

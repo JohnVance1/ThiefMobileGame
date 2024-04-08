@@ -12,7 +12,15 @@ public class Character_Base : MonoBehaviour
     public int speed;
 
 
-    
+    virtual public void Init(int x = 0, int y = 0)
+    {
+        currentObj = grid.SetCurrentNode(x, y);
+        transform.position = currentObj.transform.position;
+        currentNode = currentObj.GetComponent<GridNode>();
+        currentNode.currentCharacter = this.gameObject;
+    }
+
+
 
 
 }

@@ -49,11 +49,20 @@ public class GridNode : MonoBehaviour
         neighborNum++;
     }
 
+    /// <summary>
+    /// Returns the Neighbor located at a user defined index
+    /// </summary>
+    /// <param name="loc"> The index the neighbor is at </param>
+    /// <returns> A single Neighbor at a specified index </returns>
     public GameObject GetNeighbor(int loc)
     {
         return neighbors[loc];
     }
 
+    /// <summary>
+    /// Returns all of the Neighbors the node currently has
+    /// </summary>
+    /// <returns> The List of Neightbors </returns>
     public GameObject[] GetNeighbors()
     {
         return neighbors;

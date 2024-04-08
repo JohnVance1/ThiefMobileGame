@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
 {
     public GameObject player;
     public List<GameObject> guards;
+    public GameObject treasure;
     public GridControls grid;
 
     public Player_Movement playerMove;
@@ -16,7 +17,9 @@ public class GameManager : MonoBehaviour
     {
         foreach(GameObject guard in guards)
         {
-            guard.GetComponent<Guard_Basic>().flashLight.onColliderHit += CheckFlashLightCollider;
+            Guard_Basic guard_B = guard.GetComponent<Guard_Basic>();
+            guard_B.flashLight.onColliderHit += CheckFlashLightCollider;
+            guard_B.OnDoneMoving += PlayerFlag;
         }
     }
 
@@ -24,7 +27,10 @@ public class GameManager : MonoBehaviour
     {
         foreach (GameObject guard in guards)
         {
-            guard.GetComponent<Guard_Basic>().flashLight.onColliderHit -= CheckFlashLightCollider;
+            Guard_Basic guard_B = guard.GetComponent<Guard_Basic>();
+            guard_B.flashLight.onColliderHit -= CheckFlashLightCollider;
+            guard_B.OnDoneMoving -= PlayerFlag;
+
         }
     }
 
@@ -33,6 +39,10 @@ public class GameManager : MonoBehaviour
     {
         playerMove = player.GetComponent<Player_Movement>();
         playerMove.OnPlayerMoved += MoveWorld;
+
+        InitilizeWorld();
+
+
     }
 
 
@@ -40,6 +50,17 @@ public class GameManager : MonoBehaviour
     {
        
 
+    }
+
+    public void InitilizeWorld()
+    {
+        foreach(GameObject guard in guards)
+        {
+            guard.GetComponent<Guard_Basic>().Init();
+        }
+
+        player.GetComponent<Player_Movement>().Init(0, 4);
+        treasure.GetComponent<Treasure>().Init(4, 4);
     }
 
     public void MoveWorld()
@@ -56,7 +77,12 @@ public class GameManager : MonoBehaviour
         {
             go.GetComponent<Guard_Basic>().MoveAgent();
         }
+    }
+
+    public void PlayerFlag()
+    {
         playerMove.CanMove = true;
+
     }
 
     public void CheckFlashLightCollider(Collider2D col)
