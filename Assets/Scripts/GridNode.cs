@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GridNode : MonoBehaviour
@@ -7,6 +8,8 @@ public class GridNode : MonoBehaviour
     public GameObject currentCharacter;
     public bool IsOccupied { get; set; }
     public bool IsWall { get; set; }
+    public bool IsStartNode { get; set; }
+
 
     [SerializeField]
     private Sprite sprite;
@@ -22,6 +25,10 @@ public class GridNode : MonoBehaviour
     private GameObject[] neighbors = new GameObject[4];
     public int neighborNum { get; private set; }
 
+    private void Awake()
+    {
+        IsStartNode = false;
+    }
 
     private void Start()
     {
@@ -31,6 +38,26 @@ public class GridNode : MonoBehaviour
     private void Update()
     {
         IsOccupied = currentCharacter != null ? true : false;
+        CheckStartNode();
+
+    }
+
+    public void CheckStartNode()
+    {
+        if(!IsStartNode)
+            return;
+
+        if (!IsOccupied)
+            return;
+
+        if(!currentCharacter.tag.Equals("Player"))
+            return;
+
+        if(!currentCharacter.GetComponent<Player_Movement>().HasTreasure) 
+            return;
+
+        Debug.Log("You Won!!!");
+
     }
 
     public void SetCurrentCharacter(GameObject character)

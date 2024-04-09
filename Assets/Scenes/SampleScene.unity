@@ -134,6 +134,8 @@ GameObject:
   - component: {fileID: 172154220}
   - component: {fileID: 172154219}
   - component: {fileID: 172154221}
+  - component: {fileID: 172154222}
+  - component: {fileID: 172154223}
   m_Layer: 0
   m_Name: Guard
   m_TagString: Untagged
@@ -226,6 +228,54 @@ MonoBehaviour:
   StartNodePosition: {x: 0, y: 0}
   GoalNodePosition: {x: 4, y: 2}
   flashLight: {fileID: 595060684}
+--- !u!114 &172154222
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 172154218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43960275c2b71d643b75e9686b4512c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  actionName: Go To Treasure
+  cost: 1
+  target: {fileID: 0}
+  targetTag: 
+  turns: 1
+  preconditions:
+  - key: hasArrived
+    value: 0
+  afterEffects:
+  - key: nearTreasure
+    value: 1
+  agent: {fileID: 0}
+  running: 0
+--- !u!114 &172154223
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 172154218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c989d9b39a6acbf4db7d6081ff378e79, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  actionName: Investigate Noise
+  cost: 1
+  target: {fileID: 0}
+  targetTag: 
+  turns: 0
+  preconditions: []
+  afterEffects:
+  - key: hasArrived
+    value: 1
+  agent: {fileID: 0}
+  running: 0
 --- !u!1 &321864743
 GameObject:
   m_ObjectHideFlags: 0
@@ -262,6 +312,7 @@ MonoBehaviour:
   grid: {fileID: 1989521862}
   playerMove: {fileID: 687940025}
   CanMovePlayer: 0
+  turnNum: 0
 --- !u!4 &321864745
 Transform:
   m_ObjectHideFlags: 0
@@ -970,7 +1021,7 @@ Transform:
   m_GameObject: {fileID: 687940022}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 2, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3755,7 +3806,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2, y: -2, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 1}
+  m_LocalScale: {x: 2.5, y: 2.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}

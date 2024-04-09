@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class Treasure : Character_Base
 {
-    private void Start()
+    override public void Init(int x = 0, int y = 0)
     {
-        
+        base.Init(x, y);
+
+        currentNode.SetCurrentCharacter(gameObject);
     }
 
 
@@ -18,7 +20,7 @@ public class Treasure : Character_Base
         if(collision.tag == "Player")
         {
             collision.gameObject.GetComponent<Player_Movement>().HasTreasure = true;
-            Destroy(collision.gameObject);
+            Destroy(this.gameObject);
         }
     }
 

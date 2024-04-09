@@ -11,6 +11,9 @@ public class GridControls : MonoBehaviour
     //public List<List<GameObject>> grid;
     public GameObject[,] grid;
 
+    public Vector2 startNode;
+    public Vector2 treasureNode;
+    public Vector2 playerNode;
 
 
     public void GenerateGrid()
@@ -53,6 +56,21 @@ public class GridControls : MonoBehaviour
             }
         }
 
+    }
+    public void SetStartNode(int x, int y)
+    {
+        grid[x, y].GetComponent<GridNode>().IsStartNode = true;
+        startNode = new Vector2(x, y);
+    }
+
+    public void SetPlayerNode(int x, int y)
+    {
+        playerNode = new Vector2(x, y);
+    }
+
+    public void SetTreasureNode(int x, int y)
+    {
+        treasureNode = new Vector2(x, y);
     }
 
     private void Awake()

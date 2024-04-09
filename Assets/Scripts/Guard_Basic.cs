@@ -31,22 +31,9 @@ public class Guard_Basic : Character_Base
     private float fraction;
 
     public event Action OnDoneMoving;
+    public bool AtEndOfPath {  get; private set; }
 
-    private void Awake()
-    {
-        
-    }
-
-    private void Start()
-    {
-        //currentObj = grid.SetCurrentNode((int)StartNodePosition.x, (int)StartNodePosition.y);
-        //transform.position = currentObj.transform.position;
-        //currentNode = currentObj.GetComponent<GridNode>();
-        //currentNode.currentCharacter = this.gameObject;
-        
-        
-    }
-
+   
     override public void Init(int x = 0, int y = 0)
     {         
         base.Init((int)StartNodePosition.x, (int)StartNodePosition.y);
@@ -55,14 +42,20 @@ public class Guard_Basic : Character_Base
         flashLight.InitLight();
         flashLight.SetAimDirection(aimDir);
         flashLight.SetOrigin(transform.position);
-        Pathfinding();
+        Pathfinding(StartNodePosition, GoalNodePosition);
         speed = 2;
     }
     
     public void MoveAgent()
     {
-        if(path.Count == 0)
+        if (path.Count == 0)
+        {
+            OnDoneMoving();
+            AtEndOfPath = true;
             return;
+        }
+
+        AtEndOfPath = false;
 
         previousObj = currentObj;
         currentObj = path[0].gameObject;
@@ -153,16 +146,25 @@ public class Guard_Basic : Character_Base
         }
     }
 
-    public void Pathfinding()
+    public void UpdatePath(Vector2 goal)
     {
-        int x1 = (int)StartNodePosition.x;
-        int y1 = (int)StartNodePosition.y;
-        int x2 = (int)GoalNodePosition.x;
-        int y2 = (int)GoalNodePosition.y;
+
+    }
+
+    public void Pathfinding(Vector2 start, Vector2 goal)
+    {
+        int x1 = (int)start.x;
+        int y1 = (int)start.y;
+        int x2 = (int)goal.x;
+        int y2 = (int)goal.y;
 
         path = AStar.Search(grid,
             grid.grid[x1, y1].GetComponent<GridNode>(),
             grid.grid[x2, y2].GetComponent<GridNode>());
+
+        if(path.Count > 0 )
+            AtEndOfPath = false;
+
     }
 
     private void OnDrawGizmosSelected()

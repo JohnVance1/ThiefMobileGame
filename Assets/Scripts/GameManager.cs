@@ -13,6 +13,12 @@ public class GameManager : MonoBehaviour
     public Player_Movement playerMove;
     public bool CanMovePlayer;
 
+    public int turnNum = 0;
+
+    public Vector2 playerStart = new Vector2(0, 4);
+    public Vector2 treasureStart = new Vector2(4, 4);
+
+
     private void OnEnable()
     {
         foreach(GameObject guard in guards)
@@ -46,27 +52,25 @@ public class GameManager : MonoBehaviour
     }
 
 
-    private void FixedUpdate()
-    {
-       
-
-    }
-
     public void InitilizeWorld()
     {
+        grid.SetStartNode(0, 4);
         foreach(GameObject guard in guards)
         {
             guard.GetComponent<Guard_Basic>().Init();
         }
 
-        player.GetComponent<Player_Movement>().Init(0, 4);
-        treasure.GetComponent<Treasure>().Init(4, 4);
+        player.GetComponent<Player_Movement>().Init((int)playerStart.x, (int)playerStart.y);
+        grid.SetPlayerNode((int)playerStart.x, (int)playerStart.y);
+
+        treasure.GetComponent<Treasure>().Init((int)treasureStart.x, (int)treasureStart.y);
+        grid.SetTreasureNode((int)treasureStart.x, (int)treasureStart.y);
     }
 
     public void MoveWorld()
     {
         StartCoroutine(MoveAgents());
-
+        turnNum++;
     }
 
     public IEnumerator MoveAgents()
@@ -76,6 +80,7 @@ public class GameManager : MonoBehaviour
         foreach (GameObject go in guards)
         {
             go.GetComponent<Guard_Basic>().MoveAgent();
+            go.GetComponent<GAgent>().UpdatePlan();
         }
     }
 
