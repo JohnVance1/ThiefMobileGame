@@ -20,6 +20,21 @@ public class GNode
         this.state = new Dictionary<string, int>(allStates);
         this.action = action;
     }
+
+    public GNode(GNode parent, float cost, Dictionary<string, int> allStates, Dictionary<string, int> beliefStates, GAction action)
+    {
+        this.parent = parent;
+        this.cost = cost;
+        this.state = new Dictionary<string, int>(allStates);
+        foreach(var b in beliefStates)
+        {
+            if(!this.state.ContainsKey(b.Key))
+            {
+                this.state.Add(b.Key, b.Value);
+            }
+        }
+        this.action = action;
+    }
 }
 
 
@@ -33,7 +48,7 @@ public class GPlanner
     /// <param name="goal"></param>
     /// <param name="states"></param>
     /// <returns></returns>
-    public Queue<GAction> Plan(List<GAction> actions, Dictionary<string, int> goal, WorldStates states)
+    public Queue<GAction> Plan(List<GAction> actions, Dictionary<string, int> goal, WorldStates beliefStates)
     {
         List<GAction> usableActions = new List<GAction>();
         foreach (GAction action in actions)
@@ -45,7 +60,7 @@ public class GPlanner
         }
 
         List<GNode> leaves = new List<GNode>();
-        GNode start = new GNode(null, 0, GWorld.Instance.GetWorld().GetStates(), null);
+        GNode start = new GNode(null, 0, GWorld.Instance.GetWorld().GetStates(), beliefStates.GetStates(), null);
 
         bool success = BuildGraph(start, leaves, usableActions, goal);
         if(!success)
@@ -116,7 +131,7 @@ public class GPlanner
                 Dictionary<string, int> currentState = new Dictionary<string, int>(parent.state);
                 foreach(var effect in action.afterAction)
                 {
-                    if (currentState.ContainsKey(effect.Key))
+                    if (!currentState.ContainsKey(effect.Key))
                     {
                         currentState.Add(effect.Key, effect.Value);
                     }

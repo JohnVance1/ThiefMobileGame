@@ -8,7 +8,7 @@ public abstract class GAction : MonoBehaviour
     public string actionName = "Action";    // Name of the action
     public float cost = 1f;                 // Cost of the action
 
-    public GameObject target;               // Target where the action is going to take place
+    public Vector2 target;               // Target where the action is going to take place
     public string targetTag;                // Store the tag
     public int turns = 0;             // Duration the action should take
     public WorldState[] preconditions;      // An array of WorldStates of preconditions
@@ -54,6 +54,9 @@ public abstract class GAction : MonoBehaviour
                 afterAction.Add(state.key, state.value);
             }
         }
+
+        agentBeliefs = GetComponent<GAgent>().beliefs;
+
     }
 
     public bool IsAchievable()

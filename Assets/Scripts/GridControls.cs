@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
@@ -10,6 +11,7 @@ public class GridControls : MonoBehaviour
     public GameObject nodePrefab;
     //public List<List<GameObject>> grid;
     public GameObject[,] grid;
+    public List<Vector2> wallPositions;
 
     public Vector2 startNode;
     public Vector2 treasureNode;
@@ -23,15 +25,25 @@ public class GridControls : MonoBehaviour
         ClearGrid();
         for (int i = 0; i < height; i++) 
         {
-            //List<GameObject> list = new List<GameObject>();
             objToSpawn = new GameObject("Row" + i);
             objToSpawn.transform.parent = gameObject.transform;
             for (int j = 0; j < width; j++)
             {
                 GameObject gO = Instantiate(nodePrefab, new Vector3((i * 2) - (width / 2) - 2, (j * 2) - (height / 2) - 2, 0), Quaternion.identity);
                 gO.transform.parent = objToSpawn.transform;
-                gO.GetComponent<GridNode>().Position = new Vector2(i, j);
+                GridNode node = gO.GetComponent<GridNode>();
+                node.Position = new Vector2(i, j);
+                if(wallPositions.Contains(node.Position))
+                {
+                    node.cost = 100;
+                    node.IsWall = true;
+                }
+                else
+                {
+                    node.cost = 1;
+                    node.IsWall = false;
 
+                }
                 //list.Add(gO);
                 grid[i, j] = gO;
             }
@@ -77,7 +89,7 @@ public class GridControls : MonoBehaviour
     {
         GenerateGrid();
     }
-
+        
     /// <summary>
     /// i = y, j = x
     /// </summary>
@@ -122,10 +134,15 @@ public class GridControls : MonoBehaviour
         return grid[x, y];
     }
 
+    public Collider2D GetColliderAt(Vector2 position)
+    {
+        return grid[(int)position.x, (int)position.y].GetComponent<Collider2D>();
+    }
+
     public int Cost(GridNode b)
     {
         // Will add in a set for Walls
-        return 1;
+        return b.cost;
     }
 
 
@@ -135,22 +152,31 @@ public class GridControls : MonoBehaviour
 
         if(moveVec == Vector2.right)
         {
-            nextNode = currentNode.GetNeighbor(0);
+            if(!currentNode.GetNeighbor(0).GetComponent<GridNode>().IsWall)
+            {
+                nextNode = currentNode.GetNeighbor(0);
+            }
         }
         else if (moveVec == -Vector2.right)
         {
-            nextNode = currentNode.GetNeighbor(2);
-
+            if (!currentNode.GetNeighbor(2).GetComponent<GridNode>().IsWall)
+            {
+                nextNode = currentNode.GetNeighbor(2);
+            }
         }
         else if (moveVec == Vector2.up)
         {
-            nextNode = currentNode.GetNeighbor(3);
-
+            if (!currentNode.GetNeighbor(3).GetComponent<GridNode>().IsWall)
+            {
+                nextNode = currentNode.GetNeighbor(3);
+            }
         }
         else if (moveVec == -Vector2.up)
         {
-            nextNode = currentNode.GetNeighbor(1);
-
+            if (!currentNode.GetNeighbor(1).GetComponent<GridNode>().IsWall)
+            {
+                nextNode = currentNode.GetNeighbor(1);
+            }
         }
 
         return nextNode;

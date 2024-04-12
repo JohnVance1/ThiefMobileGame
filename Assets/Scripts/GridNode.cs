@@ -10,7 +10,6 @@ public class GridNode : MonoBehaviour
     public bool IsWall { get; set; }
     public bool IsStartNode { get; set; }
 
-
     [SerializeField]
     private Sprite sprite;
 
@@ -19,6 +18,7 @@ public class GridNode : MonoBehaviour
     public Vector2 Position { get; set; }
 
     public float Priority { get; set; }
+    public int cost { get; set; }
 
 
     [SerializeField]
@@ -95,5 +95,6 @@ public class GridNode : MonoBehaviour
         return neighbors;
     }
 
+   
 
 }

@@ -36,6 +36,7 @@ public class Player_Movement : Character_Base
         //currentObj = grid.SetCurrentNode(2, 2);
         //currentNode = currentObj.GetComponent<GridNode>();
         speed = 5;
+
     }
 
     private void Awake()
@@ -82,6 +83,10 @@ public class Player_Movement : Character_Base
                     fraction = 0;
                     currentNode.ClearCharacter();
                     IsMoving = true;
+                }
+                else
+                {
+                    CanMove = true;
                 }
             }
             

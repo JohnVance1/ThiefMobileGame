@@ -25,7 +25,7 @@ public class GAgent : MonoBehaviour
 {
     public List<GAction> actions = new List<GAction>();
     public Dictionary<SubGoal, int> goals = new Dictionary<SubGoal, int>();
-    public WorldStates worldStates = new WorldStates();
+    public WorldStates beliefs = new WorldStates();
 
     GPlanner planner;
     Queue<GAction> actionQueue;
@@ -49,6 +49,7 @@ public class GAgent : MonoBehaviour
         currentAction.running = false;
         currentAction.PostPerform();
         invoked = false;
+        UpdatePlan();
     }
 
     public void UpdatePlan()
@@ -76,7 +77,7 @@ public class GAgent : MonoBehaviour
                     CompleteAction();
                 }
             }
-            
+            return;
 
         }
 
@@ -89,7 +90,7 @@ public class GAgent : MonoBehaviour
 
             foreach (var sg in sortedGoals)
             {
-                actionQueue = planner.Plan(actions, sg.Key.sGoals, null);
+                actionQueue = planner.Plan(actions, sg.Key.sGoals, beliefs);
                 if (actionQueue != null)
                 {
                     currentGoal = sg.Key;
@@ -125,6 +126,9 @@ public class GAgent : MonoBehaviour
             {
                 // Run the currentAction
                 currentAction.running = true;
+                // Searches for the target
+                // Need to set the target in the PrePerform()
+                currentAction.agent.Pathfinding(currentAction.target);
             }
             else
             {
