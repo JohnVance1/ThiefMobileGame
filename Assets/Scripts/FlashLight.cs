@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
@@ -70,6 +71,14 @@ public class FlashLight : MonoBehaviour
             Vector3 vertex;
             Vector3 fromAngle = GetVectorFromAngle(angle);
             RaycastHit2D raycastHit2D = Physics2D.Raycast(origin, fromAngle, viewDistance);
+            RaycastHit2D[] raycastAllCollidersHit2D = Physics2D.RaycastAll(origin, fromAngle, viewDistance);
+
+            if(raycastAllCollidersHit2D.Length > 0)
+            {
+                AddToView(raycastAllCollidersHit2D);
+
+            }
+
             if (raycastHit2D.collider == null)
             {
                 vertex = origin + fromAngle * viewDistance;
@@ -79,13 +88,12 @@ public class FlashLight : MonoBehaviour
             {
                 vertex = origin + fromAngle * viewDistance;
                 onColliderHit?.Invoke(raycastHit2D.collider);
-                AddToView(raycastHit2D.collider.gameObject);
             }
             else
             {
                 vertex = raycastHit2D.point;
                 onColliderHit?.Invoke(raycastHit2D.collider);
-                AddToView(raycastHit2D.collider.gameObject);
+                //AddToView(raycastHit2D.collider.gameObject);
             }
             vertices[vertexIndex] = vertex;
 
@@ -111,12 +119,17 @@ public class FlashLight : MonoBehaviour
         
     }
 
-    private void AddToView(GameObject obj)
+    private void AddToView(RaycastHit2D[] colliders)
     {
-        if(!tempObj.Contains(obj))
+        foreach (RaycastHit2D raycast in colliders)
         {
-            tempObj.Add(obj);
+            if (!tempObj.Contains(raycast.collider.gameObject))
+            {
+                tempObj.Add(raycast.collider.gameObject);
+            }
         }
+
+       
     }
 
     public void SetOrigin(Vector3 origin)

@@ -163,7 +163,7 @@ public class Guard_Basic : Character_Base
 
     public void IsNoiseInLight(Vector2 noiseLoc)
     {
-        if(DoesLightContainNode(noiseLoc))
+        if(DoesLightContainNodeAt(noiseLoc))
         {
             fsm.Trigger(StateEvent.NoiseInView);
         }
@@ -199,7 +199,7 @@ public class Guard_Basic : Character_Base
         return false;
     }
 
-    public bool DoesLightContainNode(Vector2 noiseLoc)
+    public bool DoesLightContainNodeAt(Vector2 noiseLoc)
     {
         foreach(GameObject collider in flashLight.objectsInView)
         {
