@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 using static UnityEngine.UI.Image;
 
 public class FlashLight : MonoBehaviour
@@ -20,6 +22,9 @@ public class FlashLight : MonoBehaviour
     [SerializeField]
     private Vector3 startVec;
 
+    public List<GameObject> objectsInView;
+    private List<GameObject> tempObj;
+
 
     public delegate void OnColliderHit(Collider2D col);
     public event OnColliderHit onColliderHit;
@@ -33,13 +38,8 @@ public class FlashLight : MonoBehaviour
     {
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
-        origin = Vector3.zero;
-        UpdateLight();
-    }
-
-    private IEnumerator StartLight()
-    {
-        yield return new WaitForSeconds(0.5f);
+        objectsInView = new List<GameObject>();
+        tempObj = new List<GameObject>();
         UpdateLight();
     }
 
@@ -50,6 +50,7 @@ public class FlashLight : MonoBehaviour
 
     public void UpdateLight()
     {
+        tempObj.Clear();
         angleIncrease = fov / rayCount;
         if (startVec != null)
         {
@@ -70,15 +71,29 @@ public class FlashLight : MonoBehaviour
             Vector3 vertex;
             Vector3 fromAngle = GetVectorFromAngle(angle);
             RaycastHit2D raycastHit2D = Physics2D.Raycast(origin, fromAngle, viewDistance);
+            RaycastHit2D[] raycastAllCollidersHit2D = Physics2D.RaycastAll(origin, fromAngle, viewDistance);
+
+            if(raycastAllCollidersHit2D.Length > 0)
+            {
+                AddToView(raycastAllCollidersHit2D);
+
+            }
+
             if (raycastHit2D.collider == null)
             {
                 vertex = origin + fromAngle * viewDistance;
+                
+            }
+            else if(raycastHit2D.collider.tag == "Node")
+            {
+                vertex = origin + fromAngle * viewDistance;
+                onColliderHit?.Invoke(raycastHit2D.collider);
             }
             else
             {
                 vertex = raycastHit2D.point;
                 onColliderHit?.Invoke(raycastHit2D.collider);
-
+                //AddToView(raycastHit2D.collider.gameObject);
             }
             vertices[vertexIndex] = vertex;
 
@@ -95,12 +110,26 @@ public class FlashLight : MonoBehaviour
             angle -= angleIncrease;
         }
 
+        objectsInView = new List<GameObject>(tempObj);
 
         mesh.vertices = vertices;
         mesh.uv = uv;
         mesh.triangles = triangles;
 
         
+    }
+
+    private void AddToView(RaycastHit2D[] colliders)
+    {
+        foreach (RaycastHit2D raycast in colliders)
+        {
+            if (!tempObj.Contains(raycast.collider.gameObject))
+            {
+                tempObj.Add(raycast.collider.gameObject);
+            }
+        }
+
+       
     }
 
     public void SetOrigin(Vector3 origin)
@@ -113,7 +142,6 @@ public class FlashLight : MonoBehaviour
         startVec = direction.normalized;
         startingAngle = GetAngleFromVector(direction) + fov / 2f;
     }
-
 
 
     #region Helper Functions

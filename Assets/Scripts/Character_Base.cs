@@ -10,6 +10,7 @@ public class Character_Base : MonoBehaviour
     protected GridNode currentNode;
     public GridControls grid;
     public int speed;
+    public Vector2 position;
 
 
     virtual public void Init(int x = 0, int y = 0)
@@ -18,6 +19,7 @@ public class Character_Base : MonoBehaviour
         transform.position = currentObj.transform.position;
         currentNode = currentObj.GetComponent<GridNode>();
         currentNode.currentCharacter = this.gameObject;
+        position = currentNode.Position;
     }
 
 
