@@ -77,7 +77,7 @@ public class Guard_Basic : Character_Base
 
         GameManager.instance.NoiseAt();
 
-        fsm.AddState(GuardState.Patrolling, new GuardState_Patrol(false, this));
+        fsm.AddState(GuardState.Patrolling, new GuardState_Patrol(false, this, StartNodePosition, grid));
         fsm.AddState(GuardState.InvestigateNoise, new GuardState_Investigate(false, this, GoalNodePosition));
         fsm.AddState(GuardState.SearchForCulprit, new GuardState_SearchForCulprit(false, this));
         fsm.AddState(GuardState.GuardTreasure, new GuardState_CheckTreasure(false, this));
@@ -87,6 +87,9 @@ public class Guard_Basic : Character_Base
 
 
         fsm.AddTriggerTransition(StateEvent.NoiseInView, new Transition<GuardState>(GuardState.InvestigateNoise, GuardState.GuardTreasure));
+        fsm.AddTriggerTransition(StateEvent.TreasureSafe, new Transition<GuardState>(GuardState.GuardTreasure, GuardState.Patrolling));
+        fsm.AddTriggerTransition(StateEvent.TreasureMissing, new Transition<GuardState>(GuardState.GuardTreasure, GuardState.SearchForCulprit));
+        fsm.AddTriggerTransition(StateEvent.TreasureMissing, new Transition<GuardState>(GuardState.Patrolling , GuardState.SearchForCulprit));
 
 
 
@@ -240,11 +243,45 @@ public class Guard_Basic : Character_Base
             NewPosFound = false;
             CanMove = false;
 
+            
+
             if(path.Count == 0)
             {
                 AtEndOfPath = true;
+                if (fsm.ActiveStateName == GuardState.Patrolling)
+                {
+                    ((GuardState_Patrol)fsm.ActiveState).GetRandomLocAroundStartNode();
+                }
             }
-            IsNoiseInLight(GoalNodePosition);
+
+            if (fsm.ActiveStateName == GuardState.InvestigateNoise)
+            {
+                IsNoiseInLight(GoalNodePosition);
+            }
+            else if (fsm.ActiveStateName == GuardState.GuardTreasure)
+            {
+                if(DoesLightContainNodeAt(grid.treasureNode))
+                {
+                    if(grid.GetNodeAt(grid.treasureNode).IsOccupied)
+                    {
+                        fsm.Trigger(StateEvent.TreasureSafe);
+                        ((GuardState_Patrol)fsm.ActiveState).GetRandomLocAroundStartNode();
+
+                    }
+                    else
+                    {
+                        fsm.Trigger(StateEvent.TreasureMissing);
+                    }
+                }
+            }
+            else if (fsm.ActiveStateName == GuardState.Patrolling)
+            {
+                if (DoesLightContainNodeAt(grid.treasureNode) && !grid.GetNodeAt(grid.treasureNode).IsOccupied)
+                {
+                    fsm.Trigger(StateEvent.TreasureMissing);
+                }
+            }
+
             fsm.OnLogic();
             OnDoneMoving();
         }

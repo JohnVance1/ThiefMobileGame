@@ -129,6 +129,11 @@ public class GridControls : MonoBehaviour
         return node.GetNeighbors();
     }
 
+    public GridNode GetNodeAt(Vector2 position)
+    {
+        return grid[(int)position.x, (int)position.y].GetComponent<GridNode>();
+    }
+
     public GameObject SetCurrentNode(int x, int y)
     {
         return grid[x, y];
@@ -182,6 +187,27 @@ public class GridControls : MonoBehaviour
         return nextNode;
 
 
+    }
+
+    public bool IsNodeWall(Vector2 nodeLoc)
+    {
+        if(wallPositions.Contains(nodeLoc))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public bool IsInRange(Vector2 nodeLoc)
+    {
+        if (nodeLoc.x < width &&
+            nodeLoc.x >= 0 &&
+            nodeLoc.y < height &&
+            nodeLoc.y >= 0)
+        {
+            return true;
+        }
+        return false;
     }
 
 
