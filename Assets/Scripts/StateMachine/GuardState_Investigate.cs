@@ -22,6 +22,12 @@ public class GuardState_Investigate : GuardStateBase
 
     }
 
+    public void ChangePathfinding(Vector2 center)
+    {
+        this.position = center;
+        Guard.Pathfinding(center);
+    }
+
     public override void OnLogic()
     {
         base.OnLogic();

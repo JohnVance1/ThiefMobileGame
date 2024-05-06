@@ -29,6 +29,8 @@ public class FlashLight : MonoBehaviour
     public delegate void OnColliderHit(Collider2D col);
     public event OnColliderHit onColliderHit;
 
+    private LayerMask mask;
+
     private void Start()
     {
         
@@ -40,6 +42,7 @@ public class FlashLight : MonoBehaviour
         GetComponent<MeshFilter>().mesh = mesh;
         objectsInView = new List<GameObject>();
         tempObj = new List<GameObject>();
+        mask = LayerMask.GetMask("Grid");
         UpdateLight();
     }
 
@@ -70,7 +73,7 @@ public class FlashLight : MonoBehaviour
         {
             Vector3 vertex;
             Vector3 fromAngle = GetVectorFromAngle(angle);
-            RaycastHit2D raycastHit2D = Physics2D.Raycast(origin, fromAngle, viewDistance);
+            RaycastHit2D raycastHit2D = Physics2D.Raycast(origin, fromAngle, viewDistance, ~mask);
             RaycastHit2D[] raycastAllCollidersHit2D = Physics2D.RaycastAll(origin, fromAngle, viewDistance);
 
             if(raycastAllCollidersHit2D.Length > 0)
@@ -84,11 +87,11 @@ public class FlashLight : MonoBehaviour
                 vertex = origin + fromAngle * viewDistance;
                 
             }
-            else if(raycastHit2D.collider.tag == "Node")
-            {
-                vertex = origin + fromAngle * viewDistance;
-                onColliderHit?.Invoke(raycastHit2D.collider);
-            }
+            //else if (raycastHit2D.collider.tag == "Node")
+            //{
+            //    vertex = origin + fromAngle * viewDistance;
+            //    onColliderHit?.Invoke(raycastHit2D.collider);
+            //}
             else
             {
                 vertex = raycastHit2D.point;

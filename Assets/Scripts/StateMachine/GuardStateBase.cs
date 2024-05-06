@@ -43,6 +43,7 @@ public class GuardStateBase : State<GuardState>
     public override void OnLogic()
     {
         base.OnLogic();
+        //Debug.Log("Current State:\t" + name);
         if (RequestedExit && timer.Elapsed >= ExitTime)
         {
             fsm.StateCanExit();

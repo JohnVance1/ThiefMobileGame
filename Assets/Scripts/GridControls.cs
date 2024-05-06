@@ -150,7 +150,6 @@ public class GridControls : MonoBehaviour
         return b.cost;
     }
 
-
     public GameObject GetNextNode(Vector2 moveVec, GridNode currentNode)
     {
         GameObject nextNode = null;
@@ -200,14 +199,19 @@ public class GridControls : MonoBehaviour
 
     public bool IsInRange(Vector2 nodeLoc)
     {
-        if (nodeLoc.x < width &&
-            nodeLoc.x >= 0 &&
-            nodeLoc.y < height &&
-            nodeLoc.y >= 0)
+        if (nodeLoc.x < width - 1 &&
+            nodeLoc.x > 0 &&
+            nodeLoc.y < height - 1 &&
+            nodeLoc.y > 0)
         {
             return true;
         }
         return false;
+    }
+
+    public bool IsNodeOccupied(Vector2 nodeLoc)
+    {
+        return grid[(int)nodeLoc.x, (int)nodeLoc.y].GetComponent<GridNode>().IsOccupied;  
     }
 
 

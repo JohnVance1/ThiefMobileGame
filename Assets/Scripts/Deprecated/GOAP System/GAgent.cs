@@ -128,7 +128,7 @@ public class GAgent : MonoBehaviour
                 currentAction.running = true;
                 // Searches for the target
                 // Need to set the target in the PrePerform()
-                currentAction.agent.Pathfinding(currentAction.target);
+                //currentAction.agent.Pathfinding(currentAction.target);
             }
             else
             {

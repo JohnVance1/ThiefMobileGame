@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.UIElements;
 using UnityHFSM;
 
 public enum GuardState
@@ -77,9 +78,9 @@ public class Guard_Basic : Character_Base
 
         GameManager.instance.NoiseAt();
 
-        fsm.AddState(GuardState.Patrolling, new GuardState_Patrol(false, this, StartNodePosition, grid));
+        fsm.AddState(GuardState.Patrolling, new GuardState_Patrol(false, this, StartNodePosition, aimDir, grid));
         fsm.AddState(GuardState.InvestigateNoise, new GuardState_Investigate(false, this, GoalNodePosition));
-        fsm.AddState(GuardState.SearchForCulprit, new GuardState_SearchForCulprit(false, this));
+        fsm.AddState(GuardState.SearchForCulprit, new GuardState_SearchForCulprit(false, this, StartNodePosition, grid));
         fsm.AddState(GuardState.GuardTreasure, new GuardState_CheckTreasure(false, this));
 
 
@@ -250,7 +251,8 @@ public class Guard_Basic : Character_Base
                 AtEndOfPath = true;
                 if (fsm.ActiveStateName == GuardState.Patrolling)
                 {
-                    ((GuardState_Patrol)fsm.ActiveState).GetRandomLocAroundStartNode();
+                    ((GuardState_Patrol)fsm.ActiveState).ChangeCenterPosition(grid.treasureNode);
+                    ((GuardState_Patrol)fsm.ActiveState).GetRandomLocAroundStartNode(aimDir);
                 }
             }
 
@@ -265,7 +267,8 @@ public class Guard_Basic : Character_Base
                     if(grid.GetNodeAt(grid.treasureNode).IsOccupied)
                     {
                         fsm.Trigger(StateEvent.TreasureSafe);
-                        ((GuardState_Patrol)fsm.ActiveState).GetRandomLocAroundStartNode();
+                        ((GuardState_Patrol)fsm.ActiveState).ChangeCenterPosition(grid.treasureNode);
+                        ((GuardState_Patrol)fsm.ActiveState).GetRandomLocAroundStartNode(aimDir);
 
                     }
                     else
@@ -314,7 +317,8 @@ public class Guard_Basic : Character_Base
 
         path = AStar.Search(grid,
             grid.grid[x1, y1].GetComponent<GridNode>(),
-            grid.grid[x2, y2].GetComponent<GridNode>());
+            grid.grid[x2, y2].GetComponent<GridNode>(),
+            aimDir);
 
         if(path.Count > 0)
             AtEndOfPath = false;

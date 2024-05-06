@@ -14,12 +14,14 @@ public static class AStar
     /// <summary>
     /// Returns the best path as a List of Nodes
     /// </summary>
-    public static List<GridNode> Search(GridControls graph, GridNode start, GridNode goal)
+    public static List<GridNode> Search(GridControls graph, GridNode start, GridNode goal, Vector2 aimDirection)
     {
         Dictionary<GridNode, GridNode> came_from = new Dictionary<GridNode, GridNode>();
         Dictionary<GridNode, float> cost_so_far = new Dictionary<GridNode, float>();
 
         List<GridNode> path = new List<GridNode>();
+
+        Vector2 aim = aimDirection;
 
         PriorityQueue<GridNode, float> frontier = new PriorityQueue<GridNode, float>(0);
         frontier.Enqueue(start, 0);
@@ -38,6 +40,12 @@ public static class AStar
                 if (nextNode != null)
                 {
                     GridNode next = nextNode.GetComponent<GridNode>();
+
+                    if(current == start && (Vector2.Dot(aimDirection, (next.Position - start.Position)) < 0)) 
+                    {
+                        continue;
+                    }
+
                     float new_cost = cost_so_far[current] + graph.Cost(next);
                     if (!cost_so_far.ContainsKey(next) || new_cost < cost_so_far[next])
                     {
